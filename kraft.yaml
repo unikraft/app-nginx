@@ -1,0 +1,63 @@
+specification: '0.4'
+
+unikraft:
+  version: '0.4'
+  kconfig:
+    # Enable 9pfs filesystem support
+    - CONFIG_LIBUK9P=y
+    - CONFIG_LIB9PFS=y
+    - CONFIG_LIBDEVFS=y
+    - CONFIG_LIBDEVFS_AUTOMOUNT=y
+    - CONFIG_LIBVFSCORE_AUTOMOUNT_ROOTFS=y
+    - CONFIG_LIBVFSCORE_ROOTFS_9PFS=y
+    - CONFIG_LIBUKLIBPARAM=y
+    # Enable other options needed by nginx
+    - CONFIG_LIBUKSCHEDCOOP=y
+    - CONFIG_LIBSYSCALL_SHIM=y
+    - CONFIG_LIBPOSIX_LIBDL=y
+    - CONFIG_LIBPOSIX_PROCESS=y
+    - CONFIG_LIBPOSIX_USER=y
+    - CONFIG_UKSYSINFO=y
+    - CONFIG_LIBUKMMAP=y
+    - CONFIG_LIBUKTIME=y
+
+architectures:
+  x86_64: true
+
+platforms:
+  kvm: true
+
+libraries:
+  pthread-embedded: '0.4'
+  newlib: '0.4'
+  lwip:
+    version: '0.4'
+    kconfig:
+      - CONFIG_LWIP_UKNETDEV=y
+      - CONFIG_LWIP_TCP=y
+      - CONFIG_LWIP_WND_SCALE=y
+      - CONFIG_LWIP_TCP_KEEPALIVE=y
+      - CONFIG_LWIP_THREADS=y
+      - CONFIG_LWIP_SOCKET=y
+      - CONFIG_LWIP_AUTOIFACE=y
+      - CONFIG_LWIP_IPV4=y
+      - CONFIG_LWIP_DHCP=y
+      - CONFIG_LWIP_DNS=y
+      
+  nginx:
+    version: '0.4'
+    kconfig:
+      - CONFIG_LIBNGINX_MAIN_FUNCTION=y
+
+run:
+  arguments: vfs.rootdev=fs0 vfs.rootfs=9pfs --
+
+  volumes:
+    fs0:
+      driver: 9pfs
+      source: ./fs0
+
+  networks:
+    net0:
+      pre_up: kraft-net --with-dnsmasq up
+      post_down: kraft-net --with-dnsmasq down
