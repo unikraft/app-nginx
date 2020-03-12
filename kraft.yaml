@@ -13,7 +13,6 @@ unikraft:
     - CONFIG_LIBUKLIBPARAM=y
     # Enable other options needed by nginx
     - CONFIG_LIBUKSCHEDCOOP=y
-    - CONFIG_LIBSYSCALL_SHIM=y
     - CONFIG_LIBPOSIX_LIBDL=y
     - CONFIG_LIBPOSIX_PROCESS=y
     - CONFIG_LIBPOSIX_USER=y
