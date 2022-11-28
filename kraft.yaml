@@ -21,6 +21,8 @@ unikraft:
 targets:
   - architecture: x86_64
     platform: kvm
+  - architecture: arm64
+    platform: kvm
 libraries:
   musl:
     version: stable
