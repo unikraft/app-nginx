@@ -12,4 +12,4 @@ sudo /usr/bin/qemu-system-aarch64 \
     -netdev bridge,id=en0,br=virbr0 -device virtio-net-pci,netdev=en0 \
     -append "netdev.ipv4_addr=172.44.0.2 netdev.ipv4_gw_addr=172.44.0.1 netdev.ipv4_subnet_mask=255.255.255.0 --" \
     -kernel build/nginx_qemu-arm64 -nographic \
-    -machine virt -cpu cortex-a57
+    -machine virt -cpu max
