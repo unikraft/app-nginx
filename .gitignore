@@ -1,0 +1,4 @@
+/.config
+/fs0/nginx/logs/
+/build/
+/.unikraft/
