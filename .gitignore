@@ -2,3 +2,4 @@
 /fs0/nginx/logs/
 /build/
 /.unikraft/
+/fs0.cpio
