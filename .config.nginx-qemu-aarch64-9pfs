@@ -2,11 +2,7 @@
 # Automatically generated file; DO NOT EDIT.
 # Unikraft/0.13.1~5eb820bd Configuration
 #
-CONFIG_UK_FULLVERSION="0.13.1~5eb820bd"
-CONFIG_UK_CODENAME="Atlas"
 CONFIG_UK_ARCH="arm64"
-CONFIG_UK_BASE="/media/razvan/c4f6765a-efa5-4ebd-9cf0-7da9908a0189/razvan/unikraft/solo/nginx/.unikraft/unikraft"
-CONFIG_UK_APP="/media/razvan/c4f6765a-efa5-4ebd-9cf0-7da9908a0189/razvan/unikraft/solo/nginx"
 CONFIG_UK_DEFNAME="nginx"
 
 #
@@ -20,9 +16,9 @@ CONFIG_MCPU_ARM64_NONE=y
 #
 # end of Armv8-A Extensions
 
-CONFIG_ARM64_ERRATUM_858921=y
-CONFIG_ARM64_ERRATUM_835769=y
-CONFIG_ARM64_ERRATUM_843419=y
+CONFIG_ARM64_ERRATUM_858921=n
+CONFIG_ARM64_ERRATUM_835769=n
+CONFIG_ARM64_ERRATUM_843419=n
 CONFIG_STACK_SIZE_PAGE_ORDER=4
 # end of Architecture Selection
 
