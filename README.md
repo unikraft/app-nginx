@@ -3,7 +3,53 @@
 This application starts an Nginx web server with Unikraft.
 Follow the instructions below to set up, configure, build and run Nginx.
 
-## Quick Setup (aka TLDR)
+To get started immediately, you can use Unikraft's companion command-line companion tool, [`kraft`](https://github.com/unikraft/kraftkit).
+Start by running the interactive installer:
+
+```console
+curl --proto '=https' --tlsv1.2 -sSf https://get.kraftkit.sh | sudo sh
+```
+
+Once installed, clone [this repository](https://github.com/unikraft/app-nginx) and run `kraft build`:
+
+```console
+git clone https://github.com/unikraft/app-nginx nginx
+cd nginx/
+kraft build
+```
+
+This will guide you through an interactive build process where you can select one of the available targets (architecture/platform combinations).
+Otherwise, we recommend building for `qemu/x86_64` like so:
+
+```console
+kraft build --target nginx-qemu-x86_64-initrd
+```
+
+Once built, you can instantiate the unikernel via:
+
+```console
+kraft run --target nginx-qemu-x86_64-initrd --initrd ./fs0 -p 8080:80
+```
+
+If you don't have KVM support (such as when running inside a virtual machine), pass the `-W` option to `kraft run` to disable virtualization support:
+
+```console
+kraft run -W --target nginx-qemu-x86_64-initrd --initrd ./fs0 -p 8080:80
+```
+
+When left without the `--target` argument, you'll be queried for the desired target from the list.
+
+To use the Unikraft instance of Nginx, open another console and use the `wget` command below to query the server:
+
+```console
+wget localhost:8080
+```
+
+## Work with the Basic Build & Run Toolchain (Advanced)
+
+You can set up, configure, build and run the application from grounds up, without using the companion tool `kraft`.
+
+### Quick Setup (aka TLDR)
 
 For a quick setup, run the commands below.
 Note that you still need to install the [requirements](#requirements).
@@ -18,9 +64,9 @@ git clone https://github.com/unikraft/unikraft .unikraft/unikraft
 git clone https://github.com/unikraft/lib-nginx .unikraft/libs/nginx
 git clone https://github.com/unikraft/lib-musl .unikraft/libs/musl
 git clone https://github.com/unikraft/lib-lwip .unikraft/libs/lwip
-UK_DEFCONFIG=$(pwd)/.config.nginx_qemu-x86_64 make defconfig
+UK_DEFCONFIG=$(pwd)/.config.nginx-qemu-x86_64-9pfs make defconfig
 make -j $(nproc)
-./run-qemu-x86_64.sh
+./run-qemu-x86_64-9pfs.sh
 ```
 
 This will configure, build and run the `nginx` server.
@@ -30,15 +76,15 @@ The same can be done for `AArch64`, by running the commands below:
 
 ```console
 make properclean
-UK_DEFCONFIG=$(pwd)/.config.nginx_qemu-arm64 make defconfig
+UK_DEFCONFIG=$(pwd)/.config.nginx-qemu-aarch64-9pfs make defconfig
 make -j $(nproc)
-./run-qemu-aarch64.sh
+./run-qemu-aarch64-9pfs.sh
 ```
 
 Similar to the `x86_64` build, this will start the `nginx` server.
 Information about every step is detailed below.
 
-## Requirements
+### Requirements
 
 In order to set up, configure, build and run Nginx on Unikraft, the following packages are required:
 
@@ -86,7 +132,7 @@ sudo mkdir /etc/qemu/
 echo "allow all" | sudo tee /etc/qemu/bridge.conf
 ```
 
-## Set Up
+### Set Up
 
 The following repositories are required for Nginx:
 
@@ -110,13 +156,13 @@ Follow the steps below for the setup:
      ```console
      cd nginx/
 
-     ls -F
+     ls -aF
      ```
 
      This will print the contents of the repository:
 
      ```text
-     config-qemu-aarch64  config-qemu-x86_64  fs0/  kraft.yaml  Makefile  Makefile.uk  README.md  run-qemu-aarch64.sh*  run-qemu-x86_64.sh*
+     .config.nginx-fc-x86_64-initrd  .config.nginx-qemu-aarch64-9pfs  .config.nginx-qemu-x86_64-9pfs [...] fs0/  kraft.yaml  Makefile  Makefile.uk  README.md  run-qemu-aarch64-9pfs.sh*  run-qemu-x86_64.sh-9pfs* [...]
      ```
 
   1. While inside the `nginx/` directory, create the `.unikraft/` directory:
@@ -191,7 +237,7 @@ Follow the steps below for the setup:
      10 directories, 7 files
      ```
 
-## Configure
+### Configure
 
 Configuring, building and running a Unikraft application depends on our choice of platform and architecture.
 Currently, supported platforms are QEMU (KVM), Xen and linuxu.
@@ -199,14 +245,14 @@ QEMU (KVM) is known to be working, so we focus on that.
 
 Supported architectures are x86_64 and AArch64.
 
-Use the corresponding the configuration files (`config-...`), according to your choice of platform and architecture.
+Use the corresponding the configuration files (`.config.nginx-...`), according to your choice of platform and architecture.
 
-### QEMU x86_64
+#### QEMU x86_64
 
-Use the `config-qemu-x86_64` configuration file together with `make defconfig` to create the configuration file:
+Use the `.config.nginx-qemu-x86_64-9pfs` configuration file together with `make defconfig` to create the configuration file:
 
 ```console
-UK_DEFCONFIG=$(pwd)/config-qemu-x86_64 make defconfig
+UK_DEFCONFIG=$(pwd)/.config.nginx-qemu-x86_64-9pfs make defconfig
 ```
 
 This results in the creation of the `.config` file:
@@ -218,22 +264,22 @@ ls .config
 
 The `.config` file will be used in the build step.
 
-### QEMU AArch64
+#### QEMU AArch64
 
-Use the `config-qemu-aarch64` configuration file together with `make defconfig` to create the configuration file:
+Use the `.config.nginx-qemu-aarch64-9pfs` configuration file together with `make defconfig` to create the configuration file:
 
 ```console
-UK_DEFCONFIG=$(pwd)/config-qemu-aarch64 make defconfig
+UK_DEFCONFIG=$(pwd)/.config.nginx-qemu-aarch64-9pfs make defconfig
 ```
 
 Similar to the x86_64 configuration, this results in the creation of the `.config` file that will be used in the build step.
 
-## Build
+### Build
 
 Building uses as input the `.config` file from above, and results in a unikernel image as output.
 The unikernel output image, together with intermediary build files, are stored in the `build/` directory.
 
-### Clean Up
+#### Clean Up
 
 Before starting a build on a different platform or architecture, you must clean up the build output.
 This may also be required in case of a new configuration.
@@ -246,7 +292,7 @@ Cleaning up is done with 3 possible commands:
 
 Typically, you would use `make properclean` to remove all build artifacts, but keep the configuration file.
 
-### QEMU x86_64
+#### QEMU x86_64
 
 Building for QEMU x86_64 assumes you did the QEMU x86_64 configuration step above.
 Build the Unikraft Nginx image for QEMU x86_64 by using the command below:
@@ -269,7 +315,7 @@ make[1]: Leaving directory '/media/razvan/c4f6765a-efa5-4ebd-9cf0-7da9908a0189/r
 At the end of the build command, the `nginx_qemu-x86_64` unikernel image is generated.
 This image is to be used in the run step.
 
-### QEMU AArch64
+#### QEMU AArch64
 
 If you had configured and build a unikernel image for another platform or architecture (such as x86_64) before, then:
 
@@ -300,14 +346,14 @@ make[1]: Leaving directory '/media/razvan/c4f6765a-efa5-4ebd-9cf0-7da9908a0189/r
 Similarly to x86_64, at the end of the build command, the `nginx_qemu-arm64` unikernel image is generated.
 This image is to be used in the run step.
 
-## Run
+### Run
 
-### QEMU x86_64
+#### QEMU x86_64
 
-To run the QEMU x86_64 build, use `run-qemu-x86_64.sh`:
+To run the QEMU x86_64 build, use `run-qemu-x86_64-9pfs.sh`:
 
 ```console
-./run-qemu-x86_64.sh
+./run-qemu-x86_64-9pfs.sh
 ```
 
 This will start the Nginx server:
@@ -352,12 +398,12 @@ index.html                                    100%[=============================
 To close the QEMU Nginx server, use the `Ctrl+a x` keyboard shortcut;
 that is press the `Ctrl` and `a` keys at the same time and then, separately, press the `x` key.
 
-### QEMU AArch64
+#### QEMU AArch64
 
-To run the AArch64 build, use `run-qemu-aarch64.sh`:
+To run the AArch64 build, use `run-qemu-aarch64-9pfs.sh`:
 
 ```console
-./run-qemu-aarch64.sh
+./run-qemu-aarch64-9pfs.sh
 ```
 
 This will start the Nginx server:
@@ -396,3 +442,73 @@ index.html                                    100%[=============================
 ```
 
 Similarly, to close the QEMU Nginx server, use the `Ctrl+a x` keyboard shortcut.
+
+### Building and Running with initrd
+
+The examples above use 9pfs as the filesystem interface.
+Clean up the previous configuration, use the initrd configuration and build the unikernel by using the commands:
+
+```console
+make distclean
+UK_DEFCONFIG=$(pwd)/.config.nginx-qemu-x86_64-initrd make defconfig
+make -j $(nproc)
+```
+
+To run the QEMU x86_64 initrd build, use `run-qemu-x86_64-initrd.sh`:
+
+```console
+./run-qemu-x86_64-initrd.sh
+```
+
+The commands for AArch64 are similar:
+
+```console
+make distclean
+UK_DEFCONFIG=$(pwd)/.config.nginx-qemu-aarch64-initrd make defconfig
+make -j $(nproc)
+./run-qemu-aarch64-initrd.sh
+```
+
+### Building and Running with Firecracker
+
+[Firecracker](https://firecracker-microvm.github.io/) is a lightweight VMM (*virtual machine manager*) that can be used as more efficient alternative to QEMU.
+
+Configure and build commands are similar to a QEMU-based build with an initrd-based filesystem:
+
+```console
+make distclean
+UK_DEFCONFIG=$(pwd)/.config.nginx-fc-x86_64-initrd make defconfig
+make -j $(nproc)
+```
+
+To use Firecraker, you need to download a [Firecracker release](https://github.com/firecracker-microvm/firecracker/releases).
+You can use the commands below to make the `firecracker-x86_64` executable from release v1.4.0 available globally in the command line:
+
+```console
+cd /tmp 
+wget https://github.com/firecracker-microvm/firecracker/releases/download/v1.4.0/firecracker-v1.4.0-x86_64.tgz
+tar xzf firecracker-v1.4.0-x86_64.tgz 
+sudo cp release-v1.4.0-x86_64/firecracker-v1.4.0-x86_64 /usr/local/bin/firecracker-x86_64
+```
+
+To run a unikernel image, you need to configure a JSON file.
+This is the `nginx-fc-x86_64-initrd.json` file.
+This configuration file is uses as part of the run script `run-fc-x86_64-initrd`:
+
+```console
+./run-fc-x86_64-initrd.sh
+```
+
+Same as running with QEMU, the application will start:
+
+```text
+Powered by
+o.   .o       _ _               __ _
+Oo   Oo  ___ (_) | __ __  __ _ ' _) :_
+oO   oO ' _ `| | |/ /  _)' _` | |_|  _)
+oOo oOO| | | | |   (| | | (_) |  _) :_
+ OoOoO ._, ._:_:_,\_._,  .__,_:_, \___)
+                  Atlas 0.13.1~f7511c8b
+```
+
+Note that, currently (release 0.14), there is not yet networking support in Unikraft for Firecracker, so Nginx cannot be properly used.
