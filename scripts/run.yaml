@@ -1,0 +1,5 @@
+runs:
+  - rootfs: ./rootfs
+    command: "-c /nginx/conf/nginx.conf"
+    memory: 64
+    networking: True
