@@ -2,4 +2,5 @@
 /fs0/nginx/logs/
 /build/
 /.unikraft/
+/workdir/
 /fs0.cpio
