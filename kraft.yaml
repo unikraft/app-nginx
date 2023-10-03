@@ -21,7 +21,7 @@ targets:
       - CONFIG_LIBVFSCORE_AUTOMOUNT_ROOTFS=y
       - CONFIG_LIBVFSCORE_ROOTFS_9PFS=y
       - CONFIG_LIBVFSCORE_ROOTFS="9pfs"
-      - CONFIG_LIBVFSCORE_ROOTDEV="fs0"
+      - CONFIG_LIBVFSCORE_ROOTDEV="fs1"
   - name: nginx-qemu-x86_64-initrd
     architecture: x86_64
     platform: qemu
@@ -30,7 +30,7 @@ targets:
       - CONFIG_LIBVFSCORE_AUTOMOUNT_ROOTFS=y
       - CONFIG_LIBVFSCORE_ROOTFS_INITRD=y
       - CONFIG_LIBVFSCORE_ROOTFS="initrd"
-  - name: nginx-qemu-aarch64-9pfs
+  - name: nginx-qemu-arm64-9pfs
     architecture: arm64
     platform: qemu
     kconfig:
@@ -40,8 +40,8 @@ targets:
       - CONFIG_LIBVFSCORE_AUTOMOUNT_ROOTFS=y
       - CONFIG_LIBVFSCORE_ROOTFS_9PFS=y
       - CONFIG_LIBVFSCORE_ROOTFS="9pfs"
-      - CONFIG_LIBVFSCORE_ROOTDEV="fs0"
-  - name: nginx-qemu-aarch64-initrd
+      - CONFIG_LIBVFSCORE_ROOTDEV="fs1"
+  - name: nginx-qemu-arm64-initrd
     architecture: arm64
     platform: qemu
     kconfig:
@@ -61,7 +61,7 @@ targets:
       - CONFIG_LIBVFSCORE_AUTOMOUNT_ROOTFS=y
       - CONFIG_LIBVFSCORE_ROOTFS_INITRD=y
       - CONFIG_LIBVFSCORE_ROOTFS="initrd"
-  - name: nginx-fc-aarch64-initrd
+  - name: nginx-fc-arm64-initrd
     architecture: arm64
     platform: fc
     kconfig:
