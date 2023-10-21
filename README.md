@@ -3,7 +3,7 @@
 This application starts an Nginx web server with Unikraft.
 Follow the instructions below to set up, configure, build and run Nginx.
 
-To get started immediately, you can use Unikraft's companion command-line companion tool, [`kraft`](https://github.com/unikraft/kraftkit).
+To get started immediately, you can use Unikraft's command-line companion tool, [`kraft`](https://github.com/unikraft/kraftkit).
 Start by running the interactive installer:
 
 ```console
