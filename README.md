@@ -28,13 +28,13 @@ kraft build --target nginx-qemu-x86_64-initrd
 Once built, you can instantiate the unikernel via:
 
 ```console
-kraft run --target nginx-qemu-x86_64-initrd --initrd ./ -p 8080:80
+kraft run --target nginx-qemu-x86_64-initrd --initrd ./rootfs -p 8080:80
 ```
 
 If you don't have KVM support (such as when running inside a virtual machine), pass the `-W` option to `kraft run` to disable virtualization support:
 
 ```console
-kraft run -W --target nginx-qemu-x86_64-initrd --initrd ./ -p 8080:80
+kraft run -W --target nginx-qemu-x86_64-initrd --initrd ./rootfs -p 8080:80
 ```
 
 When left without the `--target` argument, you'll be queried for the desired target from the list.
@@ -69,6 +69,9 @@ chmod a+x scripts/generate.py
 
 This will configure, build and run the `nginx` server.
 You can see how to test it in the [running section](#run).
+
+To close the QEMU Nginx server, use the `Ctrl+a x` keyboard shortcut;
+that is press the `Ctrl` and `a` keys at the same time and then, separately, press the `x` key.
 
 The same can be done for `AArch64`, by running the commands below:
 
@@ -395,11 +398,11 @@ This image is to be used in the run step.
 
 #### QEMU x86_64
 
-To run the QEMU x86_64 build, use `run-qemu-x86_64-9pfs.sh`:
+To run the QEMU x86_64 build, use `qemu-x86_64-9pfs.sh`:
 
 ```console
 ./scripts/generate.py
-./scripts/run/qemu-x86_64-9pfs-nginx.sh
+./scripts/run/qemu-x86_64-9pfs.sh
 ```
 
 This will start the Nginx server:
@@ -446,49 +449,15 @@ that is press the `Ctrl` and `a` keys at the same time and then, separately, pre
 
 #### QEMU AArch64
 
-To run the AArch64 build, use `run-qemu-aarch64-9pfs.sh`:
+To run the AArch64 build, use `qemu-aarch64-9pfs.sh`:
 
 ```console
 ./scripts/generate.py
-./scripts/run/qemu-arm64-9pfs-nginx.sh
+./scripts/run/qemu-arm64-9pfs.sh
 ```
 
-This will start the Nginx server:
-
-```text
-1: Set IPv4 address 172.44.0.2 mask 255.255.255.0 gw 172.44.0.1
-en1: Added
-en1: Interface is up
-Powered by
-o.   .o       _ _               __ _
-Oo   Oo  ___ (_) | __ __  __ _ ' _) :_
-oO   oO ' _ `| | |/ /  _)' _` | |_|  _)
-oOo oOO| | | | |   (| | | (_) |  _) :_
- OoOoO ._, ._:_:_,\_._,  .__,_:_, \___)
-                  Atlas 0.13.1~5eb820bd
-```
-
-To test if the Unikraft instance of the Nginx server works, open another console and use the `wget` command, similar to the QEMU x86_64 run above:
-
-```console
-wget 172.44.0.2
-```
-
-This will download the [`index.html`](https://github.com/unikraft/app-nginx/blob/staging//nginx/html/index.html) file provided in the `rootfs/` directory.
-
-```text
---2023-07-01 14:32:26--  http://172.44.0.2/
-Connecting to 172.44.0.2:80... connected.
-HTTP request sent, awaiting response... 200 OK
-Length: 180 [text/html]
-Saving to: ‘index.html’
-
-index.html                                    100%[================================================================================================>]     180  --.-KB/s    in 0s
-
-2023-07-01 14:32:26 (9.87 MB/s) - ‘index.html’ saved [180/180]
-```
-
-Similarly, to close the QEMU Nginx server, use the `Ctrl+a x` keyboard shortcut.
+This will start the Nginx server, same as above.
+Follow the same steps as above to qeury / test / close the running instance of Nginx with Unikraft.
 
 ### Building and Running with initrd
 
@@ -500,10 +469,10 @@ Clean up the previous configuration, use the initrd configuration and build the 
 ./scripts/build/make-qemu-x86_64-initrd.sh
 ```
 
-To run the QEMU x86_64 initrd build, use `run-qemu-x86_64-initrd.sh`:
+To run the QEMU x86_64 initrd build, use `qemu-x86_64-initrd.sh`:
 
 ```console
-./scripts/run/qemu-x86_64-initrd-nginx.sh
+./scripts/run/qemu-x86_64-initrd.sh
 ```
 
 The commands for AArch64 are similar:
@@ -533,23 +502,27 @@ sudo cp release-v1.4.0-x86_64/firecracker-v1.4.0-x86_64 /usr/local/bin/firecrack
 ```
 
 To run a unikernel image, you need to configure a JSON file.
-This is the `scripts/run/fc-x86_64-initrd-nginx.json` file.
+This is the `scripts/run/fc-x86_64-initrd.json` file.
 This configuration file is uses as part of the run command:
 
 ```console
-./scripts/run/fc-x86_64-initrd-nginx.sh
+./scripts/run/fc-x86_64-initrd.sh
 ```
 
 Same as running with QEMU, the application will start:
 
 ```text
+1: Set IPv4 address 172.44.0.2 mask 255.255.255.0 gw 172.44.0.1
+en1: Added
+en1: Interface is up
 Powered by
 o.   .o       _ _               __ _
 Oo   Oo  ___ (_) | __ __  __ _ ' _) :_
 oO   oO ' _ `| | |/ /  _)' _` | |_|  _)
 oOo oOO| | | | |   (| | | (_) |  _) :_
  OoOoO ._, ._:_:_,\_._,  .__,_:_, \___)
-                  Atlas 0.13.1~f7511c8b
+                  Atlas 0.13.1~5eb820bd
 ```
 
-Note that, currently (release 0.14), there is not yet networking support in Unikraft for Firecracker, so Nginx cannot be properly used.
+This will start the Nginx server, same as above.
+Follow the same steps as above to qeury / test / close the running instance of Nginx with Unikraft.
