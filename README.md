@@ -1,3 +1,6 @@
+**This repository is no longer maintained.
+Please visit the [application catalog](https://github.com/unikraft/catalog/tree/main/library/nginx/1.15).** 
+
 # Nginx on Unikraft
 
 This application starts an Nginx web server with Unikraft.
